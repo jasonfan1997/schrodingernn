@@ -37,7 +37,7 @@ COLUMNS = list(range(1,91))
 TRAINING_STEPS =20000
 LEARNING_RATE = 0.002
 
-MODEL_DIR = "./model1"
+MODEL_DIR = "../data/model1"
 
 BATCH_SIZE = 800
 OPTIMIZER = "Adam"
@@ -110,6 +110,7 @@ def model_fn(features, targets, mode, params):
   # Comy_estimatorect the output layer to second hidden layer (no activation fn)
   logits = tf.layers.dense(third_processed, 2, activation=None)
   
+  weights = tf.constant(params["weights"])
   #logits = tf.contrib.layers.layer_norm(pre_logits,activation_fn=None)
   
   #logits_reshaped = tf.reshape(logits, [-1, 3])
@@ -134,7 +135,7 @@ def model_fn(features, targets, mode, params):
   onehot_labels = tf.reshape(tf.contrib.layers.one_hot_encoding(targets, 2),[-1, 2])
   
     
-  loss = tf.losses.softmax_cross_entropy(onehot_labels, logits)
+  loss = tf.losses.softmax_cross_entropy(onehot_labels, logits, weights=weights)
   
   # Calculate Loss (for both TRAIN and EVAL modes)
   '''if mode != learn.ModeKeys.INFER:
