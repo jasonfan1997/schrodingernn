@@ -139,7 +139,6 @@ def model_fn(features, targets, mode, params):
   loss = tf.losses.softmax_cross_entropy(onehot_labels, logits, weights=WEIGHTS)
 =======
   loss = tf.losses.softmax_cross_entropy(onehot_labels, logits, weights=weights)
->>>>>>> a9d5952a3e5a46a9f1cec5656848c9869f7795de
   
   # Calculate Loss (for both TRAIN and EVAL modes)
   '''if mode != learn.ModeKeys.INFER:
@@ -173,6 +172,15 @@ def input_fn(data_set):
   labels = tf.constant(data_set[LABEL].values)'''
   
   features = tf.constant(np.delete(data_set, 0, 1))
+  labels = tf.constant(np.int_(np.delete(data_set, np.s_[1:], 1)))
+  return features, labels
+
+def new_input_fn(data_set):
+  '''feature_cols = {k: tf.constant(data_set[k].values) for k in FEATURES}
+  #features = tf.constant([data_set[k].values for k in FEATURES])
+  labels = tf.constant(data_set[LABEL].values)'''
+  
+  features = tf.constant(data_set)
   labels = tf.constant(np.int_(np.delete(data_set, np.s_[1:], 1)))
   return features, labels
 
@@ -251,7 +259,7 @@ def main():
   global predicted_prob
   
   #Removed the outside "list"
-  predicted_result = my_estimator.predict(input_fn=lambda: input_fn(prediction_set),as_iterable=False)
+  predicted_result = my_estimator.predict(input_fn=lambda: new_input_fn(prediction_set),as_iterable=False)
   predicted_prob = predicted_result["probabilities"]
   predicted_class = predicted_result["classes"]
   np.save('result.npy',predicted_prob)
