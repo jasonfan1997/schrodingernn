@@ -175,7 +175,6 @@ def input_fn(data_set):
 def main():
   # Load datasets
 
-
   #skip some rows (use them as test/pred set later) 
   #not_load = np.random.randint(1000, size=10)
   global prediction_set
