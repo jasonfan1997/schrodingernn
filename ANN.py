@@ -27,8 +27,8 @@ DIR = "../data/stock_train_data_20170901.csv"
 
 #COLUMNS = ["Signif_Avg","Pivot_Energy","Flux_Density","Flux1000","Energy_Flux100","Signif_Curve","Spectral_Index","PowerLaw_Index","Flux100_300","Flux300_1000","Flux1000_3000","Flux3000_10000","Flux10000_100000","Variability_Index","CLASS1"]
 #PRE_COLUMNS = ["AVG_H","AVG_D","AVG_A"]
-COLUMNS = list(range(1,89))
-COLUMNS.insert(0,90)
+COLUMNS = list(range(1,91))
+#COLUMNS.insert(0,90)
 
 #FEATURES = ["Flux_Density","Signif_Curve","Spectral_Index","Variability_Index","Unc_Energy_Flux100","hr12","hr23","hr34","hr45"]
 #FEATURES = ["Flux1000","Energy_Flux100","Signif_Curve","Spectral_Index","PowerLaw_Index","Flux100_300","Flux300_1000","Flux1000_3000","Flux3000_10000","Flux10000_100000","Variability_Index"]
@@ -178,15 +178,19 @@ def main():
   #skip some rows (use them as test/pred set later) 
   #not_load = np.random.randint(1000, size=10)
   global prediction_set
-  
+  global training_weight
   all_set = pd.read_csv(DIR, skipinitialspace=True,
                              skiprows=0, usecols=COLUMNS).as_matrix()
-  SORT = list(range(0,88))
-  SORT.insert(0,88)
+  SORT = list(range(0,89))
+  SORT.insert(0,89)
   all_set = all_set[:,np.array(SORT)]
   np.random.shuffle(all_set)
   training_set=all_set[0:math.floor(all_set.shape[0]*0.7)]
   prediction_set=all_set[math.floor(all_set.shape[0]*0.7):]
+  training_weight=training_set[:,-1]
+  training_set=training_set[:,:-1]
+  prediction_weight=prediction_set[:,-1]
+  prediction_set=prediction_set[:,:-1]
   '''
   training_set=pd.read_csv(TRAINDIR, skipinitialspace=True,
                              skiprows=0, usecols=COLUMNS).as_matrix()
@@ -196,7 +200,7 @@ def main():
 
     # Feature cols
   
-  model_params = {"learning_rate": LEARNING_RATE, "model_dir": MODEL_DIR}
+  model_params = {"learning_rate": LEARNING_RATE, "model_dir": MODEL_DIR, "weights": training_weight}
   configs = tf.contrib.learn.RunConfig(save_summary_steps=500)
 
 
