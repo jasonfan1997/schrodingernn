@@ -229,19 +229,6 @@ def main():
  '''
 
 
-
-  '''old   validation_monitor = tf.contrib.learn.monitors.ValidationMonitor(
-    test_set.data,
-    test_set.target,
-    every_n_steps=50)
-
-  # Classify two new flower samples.
-  def new_samples():
-    return np.array(
-      [[6.4, 3.2, 4.5, 1.5],
-       [5.8, 3.1, 5.0, 1.7]], dtype=np.float32)
-       '''
-      
   global predicted_result
   global exp
   global predicted_prob
