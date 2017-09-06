@@ -76,7 +76,7 @@ def model_fn(features, targets, mode, params):
   
   
   # Comy_estimatorect the first hidden layer to input layer
-  first_hidden_layer = tf.layers.dense(features, n1, activation=tf.nn.tanh)
+  first_hidden_layer = tf.layers.dense(features, n1, activation=tf.nn.relu)
   
   first_processed = tf.contrib.layers.dropout(
          
@@ -84,14 +84,14 @@ def model_fn(features, targets, mode, params):
 
 
   # Connect the second hidden layer to first hidden layer with relu
-  second_hidden_layer = tf.layers.dense(first_processed, n2, activation=tf.nn.tanh)
+  second_hidden_layer = tf.layers.dense(first_processed, n2, activation=tf.nn.relu)
   
   second_processed = tf.contrib.layers.dropout(
           #tf.contrib.layers.layer_norm(
                   second_hidden_layer,1
                                         )  
   
-  third_hidden_layer = tf.layers.dense(second_processed, n3, activation=tf.nn.tanh)
+  third_hidden_layer = tf.layers.dense(second_processed, n3, activation=tf.nn.relu)
   
   third_processed = tf.contrib.layers.dropout(
            #tf.contrib.layers.layer_norm(,activation_fn=)
@@ -134,7 +134,7 @@ def model_fn(features, targets, mode, params):
   onehot_labels = tf.reshape(tf.contrib.layers.one_hot_encoding(targets, 2),[-1, 2])
   
     
-  loss = tf.losses.softmax_cross_entropy(onehot_labels, logits)
+  loss = tf.losses.softmax_cross_entropy(onehot_labels, logits, weights=WEIGHTS)
   
   # Calculate Loss (for both TRAIN and EVAL modes)
   '''if mode != learn.ModeKeys.INFER:
