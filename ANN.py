@@ -23,7 +23,7 @@ tf.logging.set_verbosity(tf.logging.INFO)
 #PRED_DIR = "./EPL_1617_ALL.csv"
 #TRAINDIR="./stock_train_data_20170901.csv"
 #TESTDIR="./test.csv"
-DIR = "./stock_train_data_20170901.csv"
+DIR = "../data/stock_train_data_20170901.csv"
 
 #COLUMNS = ["Signif_Avg","Pivot_Energy","Flux_Density","Flux1000","Energy_Flux100","Signif_Curve","Spectral_Index","PowerLaw_Index","Flux100_300","Flux300_1000","Flux1000_3000","Flux3000_10000","Flux10000_100000","Variability_Index","CLASS1"]
 #PRE_COLUMNS = ["AVG_H","AVG_D","AVG_A"]
@@ -174,7 +174,6 @@ def input_fn(data_set):
 
 def main():
   # Load datasets
-
 
   #skip some rows (use them as test/pred set later) 
   #not_load = np.random.randint(1000, size=10)
