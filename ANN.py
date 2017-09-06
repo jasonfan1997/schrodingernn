@@ -134,10 +134,7 @@ def model_fn(features, targets, mode, params):
   # Calculate loss
   onehot_labels = tf.reshape(tf.contrib.layers.one_hot_encoding(targets, 2),[-1, 2])
   
-    
-<<<<<<< HEAD
-  loss = tf.losses.softmax_cross_entropy(onehot_labels, logits, weights=WEIGHTS)
-=======
+
   loss = tf.losses.softmax_cross_entropy(onehot_labels, logits, weights=weights)
   
   # Calculate Loss (for both TRAIN and EVAL modes)
