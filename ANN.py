@@ -21,8 +21,13 @@ tf.logging.set_verbosity(tf.logging.INFO)
 
 
 #PRED_DIR = "./EPL_1617_ALL.csv"
+<<<<<<< HEAD
 TESTDIR="../data/stock_test_data_20170901.csv"
 #TESTDIR="./test.csv"
+=======
+#TRAINDIR="./stock_train_data_20170901.csv"
+TESTDIR="../data/stock_test_data_20170901.csv"
+>>>>>>> d518218b24b344664d58e5507c28aaa7e521b6fb
 DIR = "../data/stock_train_data_20170901.csv"
 
 #COLUMNS = ["Signif_Avg","Pivot_Energy","Flux_Density","Flux1000","Energy_Flux100","Signif_Curve","Spectral_Index","PowerLaw_Index","Flux100_300","Flux300_1000","Flux1000_3000","Flux3000_10000","Flux10000_100000","Variability_Index","CLASS1"]
@@ -51,8 +56,13 @@ predicted_class = None
 bias_3 = None
 weight_3 = None
 
+<<<<<<< HEAD
 n1= 88
 n2=44
+=======
+n1= 88   
+n2= 44
+>>>>>>> d518218b24b344664d58e5507c28aaa7e521b6fb
 n3= 2
 n4= 6
 n5= 2
@@ -134,9 +144,15 @@ def model_fn(features, targets, mode, params):
   # Calculate loss
   onehot_labels = tf.reshape(tf.contrib.layers.one_hot_encoding(targets, 2),[-1, 2])
   
+<<<<<<< HEAD
     
   #loss = tf.losses.softmax_cross_entropy(onehot_labels, logits, weights=weights)
   loss = tf.losses.softmax_cross_entropy(onehot_labels, logits)
+=======
+
+  loss = tf.losses.softmax_cross_entropy(onehot_labels, logits, weights=weights)
+  
+>>>>>>> d518218b24b344664d58e5507c28aaa7e521b6fb
   # Calculate Loss (for both TRAIN and EVAL modes)
   '''if mode != learn.ModeKeys.INFER:
     onehot_labels = tf.one_hot(indices=tf.cast(labels, tf.int32), depth=10)
@@ -172,6 +188,15 @@ def input_fn(data_set):
   labels = tf.constant(np.int_(np.delete(data_set, np.s_[1:], 1)))
   return features, labels
 
+def new_input_fn(data_set):
+  '''feature_cols = {k: tf.constant(data_set[k].values) for k in FEATURES}
+  #features = tf.constant([data_set[k].values for k in FEATURES])
+  labels = tf.constant(data_set[LABEL].values)'''
+  
+  features = tf.constant(data_set)
+  labels = tf.constant(np.int_(np.delete(data_set, np.s_[1:], 1)))
+  return features, labels
+
 
 def new_input_fn(data_set):
   '''feature_cols = {k: tf.constant(data_set[k].values) for k in FEATURES}
@@ -196,6 +221,16 @@ def main():
   all_set = all_set[:,np.array(SORT)]
   np.random.shuffle(all_set)
   training_set=all_set
+<<<<<<< HEAD
+=======
+  training_weight=training_set[:,-1]
+  training_set=training_set[:,:-1]
+  SSD=list(range(1,89))
+  prediction_set=pd.read_csv(TESTDIR, skipinitialspace=True,
+                             skiprows=0, usecols=SSD).as_matrix()
+	             
+  
+>>>>>>> d518218b24b344664d58e5507c28aaa7e521b6fb
   '''
   training_set=all_set[0:math.floor(all_set.shape[0]*0.7)]
   prediction_set=all_set[math.floor(all_set.shape[0]*0.7):]
@@ -207,7 +242,7 @@ def main():
                              skiprows=0, usecols=SSD).as_matrix()
   '''
   prediction_weight=prediction_set[:,-1]
-  prediction_set=prediction_set[:,:-1]
+  prediction_set=prediction_set[:,:-1]'''
   '''
   '''
   training_set=pd.read_csv(TRAINDIR, skipinitialspace=True,
@@ -250,19 +285,6 @@ def main():
  '''
 
 
-
-  '''old   validation_monitor = tf.contrib.learn.monitors.ValidationMonitor(
-    test_set.data,
-    test_set.target,
-    every_n_steps=50)
-
-  # Classify two new flower samples.
-  def new_samples():
-    return np.array(
-      [[6.4, 3.2, 4.5, 1.5],
-       [5.8, 3.1, 5.0, 1.7]], dtype=np.float32)
-       '''
-      
   global predicted_result
   global exp
   global predicted_prob
@@ -271,7 +293,11 @@ def main():
   predicted_result = my_estimator.predict(input_fn=lambda: new_input_fn(prediction_set),as_iterable=False)
   predicted_prob = predicted_result["probabilities"]
   predicted_class = predicted_result["classes"]
+<<<<<<< HEAD
   np.save(predicted_prob)
+=======
+  np.save('result.npy',predicted_prob)
+>>>>>>> d518218b24b344664d58e5507c28aaa7e521b6fb
     
   '''
   global bias_3
