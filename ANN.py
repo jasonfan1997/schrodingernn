@@ -21,7 +21,7 @@ tf.logging.set_verbosity(tf.logging.INFO)
 
 
 #PRED_DIR = "./EPL_1617_ALL.csv"
-#TRAINDIR="./stock_train_data_20170901.csv"
+TESTDIR="../data/stock_test_data_20170901.csv"
 #TESTDIR="./test.csv"
 DIR = "../data/stock_train_data_20170901.csv"
 
@@ -34,7 +34,7 @@ COLUMNS = list(range(1,91))
 #FEATURES = ["Flux1000","Energy_Flux100","Signif_Curve","Spectral_Index","PowerLaw_Index","Flux100_300","Flux300_1000","Flux1000_3000","Flux3000_10000","Flux10000_100000","Variability_Index"]
 #LABEL = "label"
 
-TRAINING_STEPS =20000
+TRAINING_STEPS =1
 LEARNING_RATE = 0.002
 
 MODEL_DIR = "../data/model1"
@@ -51,8 +51,8 @@ predicted_class = None
 bias_3 = None
 weight_3 = None
 
-n1= 9   
-n2= 6
+n1= 88
+n2=44
 n3= 2
 n4= 6
 n5= 2
@@ -76,7 +76,7 @@ def model_fn(features, targets, mode, params):
   
   
   # Comy_estimatorect the first hidden layer to input layer
-  first_hidden_layer = tf.layers.dense(features, n1, activation=tf.nn.tanh)
+  first_hidden_layer = tf.layers.dense(features, n1, activation=tf.nn.relu)
   
   first_processed = tf.contrib.layers.dropout(
          
@@ -84,14 +84,14 @@ def model_fn(features, targets, mode, params):
 
 
   # Connect the second hidden layer to first hidden layer with relu
-  second_hidden_layer = tf.layers.dense(first_processed, n2, activation=tf.nn.tanh)
+  second_hidden_layer = tf.layers.dense(first_processed, n2, activation=tf.nn.relu)
   
   second_processed = tf.contrib.layers.dropout(
           #tf.contrib.layers.layer_norm(
                   second_hidden_layer,1
                                         )  
   
-  third_hidden_layer = tf.layers.dense(second_processed, n3, activation=tf.nn.tanh)
+  third_hidden_layer = tf.layers.dense(second_processed, n3, activation=tf.nn.relu)
   
   third_processed = tf.contrib.layers.dropout(
            #tf.contrib.layers.layer_norm(,activation_fn=)
@@ -135,8 +135,8 @@ def model_fn(features, targets, mode, params):
   onehot_labels = tf.reshape(tf.contrib.layers.one_hot_encoding(targets, 2),[-1, 2])
   
     
-  loss = tf.losses.softmax_cross_entropy(onehot_labels, logits, weights=weights)
-  
+  #loss = tf.losses.softmax_cross_entropy(onehot_labels, logits, weights=weights)
+  loss = tf.losses.softmax_cross_entropy(onehot_labels, logits)
   # Calculate Loss (for both TRAIN and EVAL modes)
   '''if mode != learn.ModeKeys.INFER:
     onehot_labels = tf.one_hot(indices=tf.cast(labels, tf.int32), depth=10)
@@ -173,6 +173,15 @@ def input_fn(data_set):
   return features, labels
 
 
+def new_input_fn(data_set):
+  '''feature_cols = {k: tf.constant(data_set[k].values) for k in FEATURES}
+  #features = tf.constant([data_set[k].values for k in FEATURES])
+  labels = tf.constant(data_set[LABEL].values)'''
+  
+  features = tf.constant(data_set)
+  labels = tf.constant(np.int_(np.delete(data_set, np.s_[1:], 1)))
+  return features, labels
+
 def main():
   # Load datasets
 
@@ -186,12 +195,20 @@ def main():
   SORT.insert(0,89)
   all_set = all_set[:,np.array(SORT)]
   np.random.shuffle(all_set)
+  training_set=all_set
+  '''
   training_set=all_set[0:math.floor(all_set.shape[0]*0.7)]
   prediction_set=all_set[math.floor(all_set.shape[0]*0.7):]
+  '''
   training_weight=training_set[:,-1]
   training_set=training_set[:,:-1]
+  SSD=list(range(1,89))
+  prediction_set=pd.read_csv(TESTDIR, skipinitialspace=True,
+                             skiprows=0, usecols=SSD).as_matrix()
+  '''
   prediction_weight=prediction_set[:,-1]
   prediction_set=prediction_set[:,:-1]
+  '''
   '''
   training_set=pd.read_csv(TRAINDIR, skipinitialspace=True,
                              skiprows=0, usecols=COLUMNS).as_matrix()
@@ -251,10 +268,10 @@ def main():
   global predicted_prob
   
   #Removed the outside "list"
-  predicted_result = my_estimator.predict(input_fn=lambda: input_fn(prediction_set),as_iterable=False)
+  predicted_result = my_estimator.predict(input_fn=lambda: new_input_fn(prediction_set),as_iterable=False)
   predicted_prob = predicted_result["probabilities"]
   predicted_class = predicted_result["classes"]
-   
+  np.save(predicted_prob)
     
   '''
   global bias_3
