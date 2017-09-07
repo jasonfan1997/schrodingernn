@@ -25,8 +25,6 @@ tf.logging.set_verbosity(tf.logging.INFO)
 TESTDIR="../data/stock_test_data_20170901.csv"
 #TESTDIR="./test.csv"
 
-#TRAINDIR="./stock_train_data_20170901.csv"
-TESTDIR="../data/stock_test_data_20170901.csv"
 
 DIR = "../data/stock_train_data_20170901.csv"
 
@@ -95,19 +93,19 @@ def model_fn(features, targets, mode, params):
   
   second_processed = tf.contrib.layers.dropout(
           #tf.contrib.layers.layer_norm(
-                  second_hidden_layer,0.9
+                  second_hidden_layer,1
                                         )  
   
   third_hidden_layer = tf.layers.dense(second_processed, n3, activation=tf.nn.relu)
   
   third_processed = tf.contrib.layers.dropout(
            #tf.contrib.layers.layer_norm(,activation_fn=)
-                       third_hidden_layer,0.9)  
+                       third_hidden_layer,1)  
   fouth_hidden_layer = tf.layers.dense(third_processed, n4, activation=tf.nn.relu)
   
   fouth_processed = tf.contrib.layers.dropout(
            #tf.contrib.layers.layer_norm(,activation_fn=)
-                       fouth_hidden_layer, 0.9) 
+                       fouth_hidden_layer, 1) 
   fifth_hidden_layer = tf.layers.dense(fouth_processed, n4, activation=tf.nn.relu)
   
   fifth_processed = tf.contrib.layers.dropout(
@@ -144,7 +142,7 @@ def model_fn(features, targets, mode, params):
 
     
   #loss = tf.losses.softmax_cross_entropy(onehot_labels, logits, weights=weights)
-  loss = tf.losses.softmax_cross_entropy(onehot_labels, logits)
+  #loss = tf.losses.softmax_cross_entropy(onehot_labels, logits)
 
 
   loss = tf.losses.softmax_cross_entropy(onehot_labels, logits, weights=weights)
@@ -213,10 +211,13 @@ def main():
   global training_weight
   all_set = pd.read_csv(DIR, skipinitialspace=True,
                              skiprows=0, usecols=COLUMNS).as_matrix()
+  '''
   SORT = list(range(0,89))
   SORT.insert(0,89)
   all_set = all_set[:,np.array(SORT)]
+  '''
   #np.random.shuffle(all_set)
+  
   training_set=all_set
 
   training_weight=training_set[:,-1]

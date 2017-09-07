@@ -214,9 +214,11 @@ def main():
   global training_weight
   all_set = pd.read_csv(DIR, skipinitialspace=True,
                              skiprows=0, usecols=COLUMNS).as_matrix()
+  '''
   SORT = list(range(0,89))
   SORT.insert(0,89)
   all_set = all_set[:,np.array(SORT)]
+  '''
   #np.random.shuffle(all_set)
   training_set=all_set
 
