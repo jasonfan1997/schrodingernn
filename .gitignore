@@ -3,3 +3,4 @@ data/stock_train_data_20170901.csv
 model1/events.out.tfevents.1504686325.CWHYPT
 model1/events.out.tfevents.1504688760.CWHYPT
 nohup.out
+ANN.py
