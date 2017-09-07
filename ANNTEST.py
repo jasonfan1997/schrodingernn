@@ -15,6 +15,7 @@ import tensorflow as tf
 import numpy as np
 import math
 from tensorflow.contrib.learn.python.learn.estimators import model_fn as model_fn_lib
+from tensorflow.contrib import learn
 
 tf.logging.set_verbosity(tf.logging.INFO)
 
@@ -28,13 +29,13 @@ SORT = list(range(0,89))
 SORT.insert(0,89)   #89,0-87,88
 all_set = all_set[:,np.array(SORT)] #Change into 0Label,Feature,88Weight
 np.random.shuffle(all_set)
-training_set=all_set
+#training_set=all_set
 training_set=all_set[0:math.floor(all_set.shape[0]*0.7)]
 prediction_set=all_set[math.floor(all_set.shape[0]*0.7):]             
 	             
 TESTDIR="../data/stock_test_data_20170901.csv"
 
-TRAINING_STEPS =5000
+TRAINING_STEPS =200
 LEARNING_RATE = 0.002
 
 MODEL_DIR = "../data/model3"
@@ -143,29 +144,23 @@ def model_fn(features, targets, mode, params):
   #loss = tf.losses.softmax_cross_entropy(onehot_labels, logits)
 
 
-  loss = tf.losses.softmax_cross_entropy(onehot_labels, logits, weights=weights)
-  
+  loss = None
+  train_op = None
 
   # Calculate Loss (for both TRAIN and EVAL modes)
-  '''if mode != learn.ModeKeys.INFER:
-    onehot_labels = tf.one_hot(indices=tf.cast(labels, tf.int32), depth=10)
-     
-    loss = tf.losses.softmax_cross_entropy(
-        onehot_labels=onehot_labels, logits=logits)
+  if mode != learn.ModeKeys.TRAIN:
+    #onehot_labels = tf.one_hot(indices=tf.cast(labels, tf.int32), depth=10)
+    loss = tf.losses.softmax_cross_entropy(onehot_labels=onehot_labels, logits=logits)
 
   # Configure the Training Op (for TRAIN mode)
   if mode == learn.ModeKeys.TRAIN:
-    train_op = tf.contrib.layers.optimize_loss(
-        loss=loss,
-        global_step=tf.contrib.framework.get_global_step(),
-        learning_rate=0.001,
-        optimizer="Adam")'''
+    loss = tf.losses.softmax_cross_entropy(onehot_labels, logits, weights=weights)
 
-  train_op = tf.contrib.layers.optimize_loss(
-      loss=loss,
-      global_step=tf.contrib.framework.get_global_step(),
-      learning_rate=params["learning_rate"],
-      optimizer= OPTIMIZER) 
+    train_op = tf.contrib.layers.optimize_loss(
+              loss=loss,
+              global_step=tf.contrib.framework.get_global_step(),
+              learning_rate=params["learning_rate"],
+              optimizer= OPTIMIZER) 
       
   # Return a ModelFnOps object (eval_metrics not included)
   return model_fn_lib.ModelFnOps(
@@ -191,14 +186,7 @@ def new_input_fn(data_set):
   return features, labels
 
 
-def new_input_fn(data_set):
-  '''feature_cols = {k: tf.constant(data_set[k].values) for k in FEATURES}
-  #features = tf.constant([data_set[k].values for k in FEATURES])
-  labels = tf.constant(data_set[LABEL].values)'''
-  
-  features = tf.constant(data_set)
-  labels = tf.constant(np.int_(np.delete(data_set, np.s_[1:], 1)))
-  return features, labels
+
 
 def main():
   # Load datasets

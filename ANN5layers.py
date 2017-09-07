@@ -15,7 +15,7 @@ import tensorflow as tf
 import numpy as np
 import math
 from tensorflow.contrib.learn.python.learn.estimators import model_fn as model_fn_lib
-
+from tensorflow.contrib import learn
 
 tf.logging.set_verbosity(tf.logging.INFO)
 
@@ -26,8 +26,19 @@ TESTDIR="../data/stock_test_data_20170901.csv"
 #TESTDIR="./test.csv"
 
 
-DIR = "../data/stock_train_data_20170901.csv"
 
+DIR = "../data/stock_train_data_20170901.csv"
+COLUMNS = list(range(1,91))  #Read Feature,weight,label
+all_set = pd.read_csv(DIR, skipinitialspace=True,
+                             skiprows=0, usecols=COLUMNS).as_matrix()
+SORT = list(range(0,89))
+SORT.insert(0,89)   #89,0-87,88
+all_set = all_set[:,np.array(SORT)] #Change into 0Label,Feature,88Weight
+#np.random.shuffle(all_set)
+training_set=all_set
+	             
+	             
+TESTDIR="../data/stock_test_data_20170901.csv"
 #COLUMNS = ["Signif_Avg","Pivot_Energy","Flux_Density","Flux1000","Energy_Flux100","Signif_Curve","Spectral_Index","PowerLaw_Index","Flux100_300","Flux300_1000","Flux1000_3000","Flux3000_10000","Flux10000_100000","Variability_Index","CLASS1"]
 #PRE_COLUMNS = ["AVG_H","AVG_D","AVG_A"]
 COLUMNS = list(range(1,91))
@@ -141,33 +152,23 @@ def model_fn(features, targets, mode, params):
   
 
     
-  #loss = tf.losses.softmax_cross_entropy(onehot_labels, logits, weights=weights)
-  #loss = tf.losses.softmax_cross_entropy(onehot_labels, logits)
-
-
-  loss = tf.losses.softmax_cross_entropy(onehot_labels, logits, weights=weights)
-  
+  loss = None
+  train_op = None
 
   # Calculate Loss (for both TRAIN and EVAL modes)
-  '''if mode != learn.ModeKeys.INFER:
-    onehot_labels = tf.one_hot(indices=tf.cast(labels, tf.int32), depth=10)
-     
-    loss = tf.losses.softmax_cross_entropy(
-        onehot_labels=onehot_labels, logits=logits)
+  if mode != learn.ModeKeys.TRAIN:
+    #onehot_labels = tf.one_hot(indices=tf.cast(labels, tf.int32), depth=10)
+    loss = tf.losses.softmax_cross_entropy(onehot_labels=onehot_labels, logits=logits)
 
   # Configure the Training Op (for TRAIN mode)
   if mode == learn.ModeKeys.TRAIN:
-    train_op = tf.contrib.layers.optimize_loss(
-        loss=loss,
-        global_step=tf.contrib.framework.get_global_step(),
-        learning_rate=0.001,
-        optimizer="Adam")'''
+    loss = tf.losses.softmax_cross_entropy(onehot_labels, logits, weights=weights)
 
-  train_op = tf.contrib.layers.optimize_loss(
-      loss=loss,
-      global_step=tf.contrib.framework.get_global_step(),
-      learning_rate=params["learning_rate"],
-      optimizer= OPTIMIZER) 
+    train_op = tf.contrib.layers.optimize_loss(
+              loss=loss,
+              global_step=tf.contrib.framework.get_global_step(),
+              learning_rate=params["learning_rate"],
+              optimizer= OPTIMIZER) 
       
   # Return a ModelFnOps object (eval_metrics not included)
   return model_fn_lib.ModelFnOps(
@@ -193,14 +194,6 @@ def new_input_fn(data_set):
   return features, labels
 
 
-def new_input_fn(data_set):
-  '''feature_cols = {k: tf.constant(data_set[k].values) for k in FEATURES}
-  #features = tf.constant([data_set[k].values for k in FEATURES])
-  labels = tf.constant(data_set[LABEL].values)'''
-  
-  features = tf.constant(data_set)
-  labels = tf.constant(np.int_(np.delete(data_set, np.s_[1:], 1)))
-  return features, labels
 
 def main():
   # Load datasets
@@ -209,16 +202,8 @@ def main():
   #not_load = np.random.randint(1000, size=10)
   global prediction_set
   global training_weight
-  all_set = pd.read_csv(DIR, skipinitialspace=True,
-                             skiprows=0, usecols=COLUMNS).as_matrix()
-  '''
-  SORT = list(range(0,89))
-  SORT.insert(0,89)
-  all_set = all_set[:,np.array(SORT)]
-  '''
-  #np.random.shuffle(all_set)
+  global training_set
   
-  training_set=all_set
 
   training_weight=training_set[:,-1]
   training_set=training_set[:,:-1]

@@ -15,6 +15,7 @@ import tensorflow as tf
 import numpy as np
 import math
 from tensorflow.contrib.learn.python.learn.estimators import model_fn as model_fn_lib
+from tensorflow.contrib import learn
 
 tf.logging.set_verbosity(tf.logging.INFO)
 
@@ -33,10 +34,10 @@ training_set=all_set
 	             
 TESTDIR="../data/stock_test_data_20170901.csv"
 
-TRAINING_STEPS =5000
+TRAINING_STEPS =2
 LEARNING_RATE = 0.002
 
-MODEL_DIR = "../data/model1"
+MODEL_DIR = "../data/model4"
 
 BATCH_SIZE = 800
 OPTIMIZER = "Adam"
@@ -137,34 +138,29 @@ def model_fn(features, targets, mode, params):
   onehot_labels = tf.reshape(tf.contrib.layers.one_hot_encoding(targets, 2),[-1, 2])
   
 
-    
-  #loss = tf.losses.softmax_cross_entropy(onehot_labels, logits, weights=weights)
-  loss = tf.losses.softmax_cross_entropy(onehot_labels, logits)
-
-
+  '''
   loss = tf.losses.softmax_cross_entropy(onehot_labels, logits, weights=weights)
-  
+  loss = tf.losses.softmax_cross_entropy(onehot_labels, logits)
+  '''
+
+  #loss = tf.losses.softmax_cross_entropy(onehot_labels, logits, weights=weights)
+  loss = None
+  train_op = None
 
   # Calculate Loss (for both TRAIN and EVAL modes)
-  '''if mode != learn.ModeKeys.INFER:
-    onehot_labels = tf.one_hot(indices=tf.cast(labels, tf.int32), depth=10)
-     
-    loss = tf.losses.softmax_cross_entropy(
-        onehot_labels=onehot_labels, logits=logits)
+  if mode != learn.ModeKeys.TRAIN:
+    #onehot_labels = tf.one_hot(indices=tf.cast(labels, tf.int32), depth=10)
+    loss = tf.losses.softmax_cross_entropy(onehot_labels=onehot_labels, logits=logits)
 
   # Configure the Training Op (for TRAIN mode)
   if mode == learn.ModeKeys.TRAIN:
-    train_op = tf.contrib.layers.optimize_loss(
-        loss=loss,
-        global_step=tf.contrib.framework.get_global_step(),
-        learning_rate=0.001,
-        optimizer="Adam")'''
+    loss = tf.losses.softmax_cross_entropy(onehot_labels, logits, weights=weights)
 
-  train_op = tf.contrib.layers.optimize_loss(
-      loss=loss,
-      global_step=tf.contrib.framework.get_global_step(),
-      learning_rate=params["learning_rate"],
-      optimizer= OPTIMIZER) 
+    train_op = tf.contrib.layers.optimize_loss(
+              loss=loss,
+              global_step=tf.contrib.framework.get_global_step(),
+              learning_rate=params["learning_rate"],
+              optimizer= OPTIMIZER) 
       
   # Return a ModelFnOps object (eval_metrics not included)
   return model_fn_lib.ModelFnOps(
@@ -206,16 +202,17 @@ def main():
   #not_load = np.random.randint(1000, size=10)
   global prediction_set
   global training_weight
-
+  global training_set
+  '''
   all_set = pd.read_csv(DIR, skipinitialspace=True,
                              skiprows=0, usecols=COLUMNS).as_matrix()
-  '''
+  
   SORT = list(range(0,89))
   SORT.insert(0,89)
   all_set = all_set[:,np.array(SORT)]
   '''
   #np.random.shuffle(all_set)
-  training_set=all_set
+  
 
   training_weight=training_set[:,-1]
   training_set=training_set[:,:-1]
