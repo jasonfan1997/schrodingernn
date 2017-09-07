@@ -19,18 +19,22 @@ from tensorflow.contrib.learn.python.learn.estimators import model_fn as model_f
 tf.logging.set_verbosity(tf.logging.INFO)
 
 
-#Generate Training Set
+#Generate Training numbers and training weight
 DIR = "../data/stock_train_data_20170901.csv"
 COLUMNS = list(range(1,91))  #Read Feature,weight,label
 all_set = pd.read_csv(DIR, skipinitialspace=True,
                              skiprows=0, usecols=COLUMNS).as_matrix()
+
 SORT = list(range(0,89))
 SORT.insert(0,89)   #89,0-87,88
-all_set = all_set[:,np.array(SORT)] #Change into 0Label,Feature,88Weight
+all_set = all_set[:,np.array(SORT)] #Change into 0Label,Feature,89Weight
 #np.random.shuffle(all_set)
 training_set=all_set
-	             
-	             
+training_weight=training_set[:,-1]  #last column
+training_stat=training_set[:,:-1]   #Except last column:Label+Features	             
+	
+
+	
 TESTDIR="../data/stock_test_data_20170901.csv"
 
 TRAINING_STEPS =5000
@@ -212,27 +216,12 @@ def main():
 	             
 
 
-  training_weight=training_set[:,-1]
-  training_set=training_set[:,:-1]
+
   SSD=list(range(1,89))
   prediction_set=pd.read_csv(TESTDIR, skipinitialspace=True,
                              skiprows=0, usecols=SSD).as_matrix()
 	             
-  
 
-  '''
-  training_set=all_set[0:math.floor(all_set.shape[0]*0.7)]
-  prediction_set=all_set[math.floor(all_set.shape[0]*0.7):]
-  '''
-  training_weight=training_set[:,-1]
-  training_set=training_set[:,:-1]
-  SSD=list(range(1,89))
-  prediction_set=pd.read_csv(TESTDIR, skipinitialspace=True,
-                             skiprows=0, usecols=SSD).as_matrix()
-
-  #Prediction set without HP column, used to calc expectation                             
-
-    # Feature cols
   
   model_params = {"learning_rate": LEARNING_RATE, "model_dir": MODEL_DIR, "weights": training_weight}
   configs = tf.contrib.learn.RunConfig(save_summary_steps=500)
@@ -245,26 +234,26 @@ def main():
   
   
   validation_monitor = tf.contrib.learn.monitors.ValidationMonitor(
-    input_fn=lambda: input_fn(training_set),
+    input_fn=lambda: input_fn(training_stat),
     early_stopping_metric="loss",
     early_stopping_metric_minimize=True,
     early_stopping_rounds=200)
 
   #Initialize the training!!!
-  my_estimator.fit(input_fn=lambda: input_fn(training_set), steps=TRAINING_STEPS)
+  my_estimator.fit(input_fn=lambda: input_fn(training_stat), steps=TRAINING_STEPS)
   
   
   #SKCompat Version (accepts using batch size)
-  ''''''
-  x = np.delete(training_set, 0, 1)
-  y = np.int_(np.delete(training_set, np.s_[1:], 1))'''
+
+  x = np.delete(training_stat, 0, 1)
+  y = np.int_(np.delete(training_stat, np.s_[1:], 1))
   
   
-  '''
+
   my_estimator = tf.contrib.learn.Estimator(model_fn=model_fn, params=model_params)
   my_estimator.fit(x, y , steps=TRAINING_STEPS, batch_size=BATCH_SIZE, monitors=[validation_monitor])
  
-'''
+
 
   global predicted_result
   global exp
