@@ -39,10 +39,10 @@ COLUMNS = list(range(1,91))
 #FEATURES = ["Flux1000","Energy_Flux100","Signif_Curve","Spectral_Index","PowerLaw_Index","Flux100_300","Flux300_1000","Flux1000_3000","Flux3000_10000","Flux10000_100000","Variability_Index"]
 #LABEL = "label"
 
-TRAINING_STEPS =5000
+TRAINING_STEPS =10000
 LEARNING_RATE = 0.002
 
-MODEL_DIR = "../data/model1"
+MODEL_DIR = "../data/model2"
 
 BATCH_SIZE = 800
 OPTIMIZER = "Adam"
@@ -58,9 +58,9 @@ weight_3 = None
 
 
 n1= 88   
-n2=44
+n2= 66
 
-n3= 2
+n3= 44 
 n4= 22
 n5= 2
 
@@ -95,15 +95,14 @@ def model_fn(features, targets, mode, params):
   
   second_processed = tf.contrib.layers.dropout(
           #tf.contrib.layers.layer_norm(
-                  second_hidden_layer,1
+                  second_hidden_layer,0.9
                                         )  
   
   third_hidden_layer = tf.layers.dense(second_processed, n3, activation=tf.nn.relu)
   
   third_processed = tf.contrib.layers.dropout(
            #tf.contrib.layers.layer_norm(,activation_fn=)
-                       third_hidden_layer,1)
-  '''
+                       third_hidden_layer,0.9)  
   fouth_hidden_layer = tf.layers.dense(third_processed, n4, activation=tf.nn.relu)
   
   fouth_processed = tf.contrib.layers.dropout(
@@ -114,9 +113,9 @@ def model_fn(features, targets, mode, params):
   fifth_processed = tf.contrib.layers.dropout(
            #tf.contrib.layers.layer_norm(,activation_fn=)
                        fifth_hidden_layer, 1) 
-  '''
+  
   # Comy_estimatorect the output layer to second hidden layer (no activation fn)
-  logits = tf.layers.dense(third_processed, 2, activation=None)
+  logits = tf.layers.dense(fifth_processed, 2, activation=None)
   
   weights = tf.constant(params["weights"])
   #logits = tf.contrib.layers.layer_norm(pre_logits,activation_fn=None)
@@ -239,7 +238,7 @@ def main():
                              skiprows=0, usecols=SSD).as_matrix()
   '''
   prediction_weight=prediction_set[:,-1]
-  prediction_set=prediction_set[:,:-1]'''
+  prediction_set=prediction_set[:,:-1]
   '''
   '''
   training_set=pd.read_csv(TRAINDIR, skipinitialspace=True,
@@ -271,7 +270,8 @@ def main():
   
   
   #SKCompat Version (accepts using batch size)
-  ''''''
+  
+  '''
   x = np.delete(training_set, 0, 1)
   y = np.int_(np.delete(training_set, np.s_[1:], 1))'''
   
