@@ -232,11 +232,7 @@ def main():
   training_set=all_set[0:math.floor(all_set.shape[0]*0.7)]
   prediction_set=all_set[math.floor(all_set.shape[0]*0.7):]
   '''
-  training_weight=training_set[:,-1]
-  training_set=training_set[:,:-1]
-  SSD=list(range(1,89))
-  prediction_set=pd.read_csv(TESTDIR, skipinitialspace=True,
-                             skiprows=0, usecols=SSD).as_matrix()
+  
   '''
   prediction_weight=prediction_set[:,-1]
   prediction_set=prediction_set[:,:-1]
