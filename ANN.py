@@ -206,7 +206,7 @@ def main():
   #not_load = np.random.randint(1000, size=10)
   global prediction_set
   global training_weight
-<<<<<<< HEAD
+
   all_set = pd.read_csv(DIR, skipinitialspace=True,
                              skiprows=0, usecols=COLUMNS).as_matrix()
   '''
@@ -229,11 +229,7 @@ def main():
   training_set=all_set[0:math.floor(all_set.shape[0]*0.7)]
   prediction_set=all_set[math.floor(all_set.shape[0]*0.7):]
   '''
-  training_weight=training_set[:,-1]
-  training_set=training_set[:,:-1]
-  SSD=list(range(1,89))
-  prediction_set=pd.read_csv(TESTDIR, skipinitialspace=True,
-                             skiprows=0, usecols=SSD).as_matrix()
+  
   #Prediction set without HP column, used to calc expectation                             
 
     # Feature cols
@@ -259,16 +255,8 @@ def main():
   
   
   #SKCompat Version (accepts using batch size)
-  ''''''
-  x = np.delete(training_set, 0, 1)
-  y = np.int_(np.delete(training_set, np.s_[1:], 1))'''
   
-  
-  '''
-  my_estimator = tf.contrib.learn.Estimator(model_fn=model_fn, params=model_params)
-  my_estimator.fit(x, y , steps=TRAINING_STEPS, batch_size=BATCH_SIZE, monitors=[validation_monitor])
- 
-'''
+
 
   global predicted_result
   global exp
