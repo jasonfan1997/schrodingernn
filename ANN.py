@@ -21,13 +21,13 @@ tf.logging.set_verbosity(tf.logging.INFO)
 
 
 #PRED_DIR = "./EPL_1617_ALL.csv"
-<<<<<<< HEAD
+
 TESTDIR="../data/stock_test_data_20170901.csv"
 #TESTDIR="./test.csv"
-=======
+
 #TRAINDIR="./stock_train_data_20170901.csv"
 TESTDIR="../data/stock_test_data_20170901.csv"
->>>>>>> d518218b24b344664d58e5507c28aaa7e521b6fb
+
 DIR = "../data/stock_train_data_20170901.csv"
 
 #COLUMNS = ["Signif_Avg","Pivot_Energy","Flux_Density","Flux1000","Energy_Flux100","Signif_Curve","Spectral_Index","PowerLaw_Index","Flux100_300","Flux300_1000","Flux1000_3000","Flux3000_10000","Flux10000_100000","Variability_Index","CLASS1"]
@@ -39,10 +39,10 @@ COLUMNS = list(range(1,91))
 #FEATURES = ["Flux1000","Energy_Flux100","Signif_Curve","Spectral_Index","PowerLaw_Index","Flux100_300","Flux300_1000","Flux1000_3000","Flux3000_10000","Flux10000_100000","Variability_Index"]
 #LABEL = "label"
 
-TRAINING_STEPS =1
+TRAINING_STEPS =10000
 LEARNING_RATE = 0.002
 
-MODEL_DIR = "../data/model1"
+MODEL_DIR = "../data/model2"
 
 BATCH_SIZE = 800
 OPTIMIZER = "Adam"
@@ -56,15 +56,12 @@ predicted_class = None
 bias_3 = None
 weight_3 = None
 
-<<<<<<< HEAD
-n1= 88
-n2=44
-=======
+
 n1= 88   
-n2= 44
->>>>>>> d518218b24b344664d58e5507c28aaa7e521b6fb
-n3= 2
-n4= 6
+n2= 66
+
+n3= 44 
+n4= 22
 n5= 2
 
 '''def normalize(a):
@@ -98,27 +95,27 @@ def model_fn(features, targets, mode, params):
   
   second_processed = tf.contrib.layers.dropout(
           #tf.contrib.layers.layer_norm(
-                  second_hidden_layer,1
+                  second_hidden_layer,0.9
                                         )  
   
   third_hidden_layer = tf.layers.dense(second_processed, n3, activation=tf.nn.relu)
   
   third_processed = tf.contrib.layers.dropout(
            #tf.contrib.layers.layer_norm(,activation_fn=)
-                       third_hidden_layer,1)  
-  '''fouth_hidden_layer = tf.layers.dense(third_processed, n4, activation=tf.nn.tanh)
+                       third_hidden_layer,0.9)  
+  fouth_hidden_layer = tf.layers.dense(third_processed, n4, activation=tf.nn.relu)
   
   fouth_processed = tf.contrib.layers.dropout(
            #tf.contrib.layers.layer_norm(,activation_fn=)
-                       fouth_hidden_layer, 1) 
-  fifth_hidden_layer = tf.layers.dense(fouth_processed, n4, activation=tf.nn.tanh)
+                       fouth_hidden_layer, 0.9) 
+  fifth_hidden_layer = tf.layers.dense(fouth_processed, n4, activation=tf.nn.relu)
   
   fifth_processed = tf.contrib.layers.dropout(
            #tf.contrib.layers.layer_norm(,activation_fn=)
-                       fifth_hidden_layer, 1) '''
+                       fifth_hidden_layer, 1) 
   
   # Comy_estimatorect the output layer to second hidden layer (no activation fn)
-  logits = tf.layers.dense(third_processed, 2, activation=None)
+  logits = tf.layers.dense(fifth_processed, 2, activation=None)
   
   weights = tf.constant(params["weights"])
   #logits = tf.contrib.layers.layer_norm(pre_logits,activation_fn=None)
@@ -144,15 +141,15 @@ def model_fn(features, targets, mode, params):
   # Calculate loss
   onehot_labels = tf.reshape(tf.contrib.layers.one_hot_encoding(targets, 2),[-1, 2])
   
-<<<<<<< HEAD
+
     
   #loss = tf.losses.softmax_cross_entropy(onehot_labels, logits, weights=weights)
   loss = tf.losses.softmax_cross_entropy(onehot_labels, logits)
-=======
+
 
   loss = tf.losses.softmax_cross_entropy(onehot_labels, logits, weights=weights)
   
->>>>>>> d518218b24b344664d58e5507c28aaa7e521b6fb
+
   # Calculate Loss (for both TRAIN and EVAL modes)
   '''if mode != learn.ModeKeys.INFER:
     onehot_labels = tf.one_hot(indices=tf.cast(labels, tf.int32), depth=10)
@@ -219,10 +216,9 @@ def main():
   SORT = list(range(0,89))
   SORT.insert(0,89)
   all_set = all_set[:,np.array(SORT)]
-  np.random.shuffle(all_set)
+  #np.random.shuffle(all_set)
   training_set=all_set
-<<<<<<< HEAD
-=======
+
   training_weight=training_set[:,-1]
   training_set=training_set[:,:-1]
   SSD=list(range(1,89))
@@ -230,7 +226,7 @@ def main():
                              skiprows=0, usecols=SSD).as_matrix()
 	             
   
->>>>>>> d518218b24b344664d58e5507c28aaa7e521b6fb
+
   '''
   training_set=all_set[0:math.floor(all_set.shape[0]*0.7)]
   prediction_set=all_set[math.floor(all_set.shape[0]*0.7):]
@@ -274,7 +270,7 @@ def main():
   
   
   #SKCompat Version (accepts using batch size)
-  '''
+  ''''''
   x = np.delete(training_set, 0, 1)
   y = np.int_(np.delete(training_set, np.s_[1:], 1))'''
   
@@ -282,8 +278,8 @@ def main():
   '''
   my_estimator = tf.contrib.learn.Estimator(model_fn=model_fn, params=model_params)
   my_estimator.fit(x, y , steps=TRAINING_STEPS, batch_size=BATCH_SIZE, monitors=[validation_monitor])
- '''
-
+ 
+'''
 
   global predicted_result
   global exp
@@ -293,11 +289,11 @@ def main():
   predicted_result = my_estimator.predict(input_fn=lambda: new_input_fn(prediction_set),as_iterable=False)
   predicted_prob = predicted_result["probabilities"]
   predicted_class = predicted_result["classes"]
-<<<<<<< HEAD
-  np.save(predicted_prob)
-=======
+
+  
+
   np.save('result.npy',predicted_prob)
->>>>>>> d518218b24b344664d58e5507c28aaa7e521b6fb
+
     
   '''
   global bias_3
