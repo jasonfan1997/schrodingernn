@@ -4,7 +4,7 @@ Created on Sat Aug 12 16:14:11 2017
 
 @author: user98
 """
-
+######CSV Style: 0:ID 1-88:feature 89:weight 90:label
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -16,28 +16,22 @@ import numpy as np
 import math
 from tensorflow.contrib.learn.python.learn.estimators import model_fn as model_fn_lib
 
-
 tf.logging.set_verbosity(tf.logging.INFO)
 
 
-#PRED_DIR = "./EPL_1617_ALL.csv"
-
-TESTDIR="../data/stock_test_data_20170901.csv"
-#TESTDIR="./test.csv"
-
-#TRAINDIR="./stock_train_data_20170901.csv"
-TESTDIR="../data/stock_test_data_20170901.csv"
-
+#Generate Training Set
 DIR = "../data/stock_train_data_20170901.csv"
-
-#COLUMNS = ["Signif_Avg","Pivot_Energy","Flux_Density","Flux1000","Energy_Flux100","Signif_Curve","Spectral_Index","PowerLaw_Index","Flux100_300","Flux300_1000","Flux1000_3000","Flux3000_10000","Flux10000_100000","Variability_Index","CLASS1"]
-#PRE_COLUMNS = ["AVG_H","AVG_D","AVG_A"]
-COLUMNS = list(range(1,91))
-#COLUMNS.insert(0,90)
-
-#FEATURES = ["Flux_Density","Signif_Curve","Spectral_Index","Variability_Index","Unc_Energy_Flux100","hr12","hr23","hr34","hr45"]
-#FEATURES = ["Flux1000","Energy_Flux100","Signif_Curve","Spectral_Index","PowerLaw_Index","Flux100_300","Flux300_1000","Flux1000_3000","Flux3000_10000","Flux10000_100000","Variability_Index"]
-#LABEL = "label"
+COLUMNS = list(range(1,91))  #Read Feature,weight,label
+all_set = pd.read_csv(DIR, skipinitialspace=True,
+                             skiprows=0, usecols=COLUMNS).as_matrix()
+SORT = list(range(0,89))
+SORT.insert(0,89)   #89,0-87,88
+all_set = all_set[:,np.array(SORT)] #Change into 0Label,Feature,88Weight
+#np.random.shuffle(all_set)
+training_set=all_set
+	             
+	             
+TESTDIR="../data/stock_test_data_20170901.csv"
 
 TRAINING_STEPS =5000
 LEARNING_RATE = 0.002
@@ -212,6 +206,7 @@ def main():
   #not_load = np.random.randint(1000, size=10)
   global prediction_set
   global training_weight
+<<<<<<< HEAD
   all_set = pd.read_csv(DIR, skipinitialspace=True,
                              skiprows=0, usecols=COLUMNS).as_matrix()
   '''
@@ -239,15 +234,6 @@ def main():
   SSD=list(range(1,89))
   prediction_set=pd.read_csv(TESTDIR, skipinitialspace=True,
                              skiprows=0, usecols=SSD).as_matrix()
-  '''
-  prediction_weight=prediction_set[:,-1]
-  prediction_set=prediction_set[:,:-1]'''
-  '''
-  '''
-  training_set=pd.read_csv(TRAINDIR, skipinitialspace=True,
-                             skiprows=0, usecols=COLUMNS).as_matrix()
-  prediction_set= pd.read_csv(TESTDIR, skipinitialspace=True,
-                             skiprows=0, usecols=COLUMNS).as_matrix()'''
   #Prediction set without HP column, used to calc expectation                             
 
     # Feature cols
