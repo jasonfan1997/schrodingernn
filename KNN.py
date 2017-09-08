@@ -1,17 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Sep  8 12:11:34 2017
+Created on Fri Sep  8 16:00:41 2017
 
 @author: user98
 """
 
-from sklearn.model_selection import KFold
-from sklearn.ensemble import RandomForestClassifier
-from sklearn import linear_model
-from sklearn.metrics import roc_curve, auc
-from sklearn.svm import SVC
-# Load pandas
-from sklearn.model_selection import cross_val_score
+from sklearn.neighbors import KNeighborsClassifier
 import pandas as pd
 import math
 # Load numpy
@@ -37,16 +31,8 @@ training_weight=training_set[:,-1]
 training_set=training_set[:,:-1]         
 #prediction_weight=prediction_set[:,-1]
 #prediction_set=prediction_set[:,:-1]    
-
-#logreg = linear_model.LogisticRegression()
-'''
-SSD=list(range(1,89))
-prediction_set=pd.read_csv(TESTDIR, skipinitialspace=True,
-                             skiprows=0, usecols=SSD).as_matrix()
-'''
-clf=SVC(probability=True,verbose=3,n_jobs=-1)
-#print(cross_val_score(clf,training_set[:,1:], training_set[:,0], cv=10))
+clf=KNeighborsClassifier(n_neighbors=20,n_jobs=-1)
 clf.fit(training_set[:,1:],training_set[:,0])
 predicted_prob=clf.predict_proba(prediction_set)
 
-np.savetxt('SVC.csv',predicted_prob,delimiter=',')
+np.savetxt('KNN.csv',predicted_prob,delimiter=',')
