@@ -48,7 +48,7 @@ COLUMNS = list(range(1,91))
 #FEATURES = ["Flux1000","Energy_Flux100","Signif_Curve","Spectral_Index","PowerLaw_Index","Flux100_300","Flux300_1000","Flux1000_3000","Flux3000_10000","Flux10000_100000","Variability_Index"]
 #LABEL = "label"
 
-TRAINING_STEPS =10000
+TRAINING_STEPS =40000
 LEARNING_RATE = 0.002
 
 MODEL_DIR = "../data/model2"
