@@ -44,7 +44,6 @@ TRAINING_STEPS = 5
 LEARNING_RATE = 0.002
 BATCH_SIZE = 800
 OPTIMIZER = "Adam"
-model_params = {"learning_rate": LEARNING_RATE, "model_dir": MODEL_DIR, "weights": training_weight}
 
 
 
@@ -65,19 +64,19 @@ def model_fn(features, targets, mode, params):
   """Model function for Estimator."""
   
   # Comy_estimatorect the first hidden layer to input layer
-  first_hidden_layer = tf.layers.dense(tf.layers.batch_normalization(features), n1, activation=tf.nn.relu)
+  first_hidden_layer = tf.layers.dense(tf.layers.batch_normalization(tf.to_double(features)), n1, activation=tf.nn.relu)
   
-  first_processed = tf.contrib.layers.dropout(tf.layers.batch_normalization(first_hidden_layer), keep_prob=0.7)
+  first_processed = tf.contrib.layers.dropout(first_hidden_layer, keep_prob=0.7)
 
 
   # Connect the second hidden layer to first hidden layer with relu
   second_hidden_layer = tf.layers.dense(first_processed, n2, activation=tf.nn.relu)
   
-  second_processed = tf.contrib.layers.dropout(tf.layers.batch_normalization(second_hidden_layer),0.7)  
+  second_processed = tf.contrib.layers.dropout(second_hidden_layer,0.7)  
   
   third_hidden_layer = tf.layers.dense(second_processed, n3, activation=tf.nn.relu)
   
-  third_processed = tf.contrib.layers.dropout(tf.layers.batch_normalization(third_hidden_layer),0.7)
+  third_processed = tf.contrib.layers.dropout(third_hidden_layer,0.7)
 
   # Comy_estimatorect the output layer to second hidden layer (no activation fn)
   logits = tf.layers.dense(third_processed, 2, activation=None)
