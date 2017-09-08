@@ -1,5 +1,6 @@
 # LSTM and CNN for sequence classification
-import numpy
+import numpy as np
+import math
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, LSTM
 from keras.layers.convolutional import Conv1D, MaxPooling1D
@@ -33,7 +34,7 @@ prediction_set=pd.read_csv(TESTDIR, skipinitialspace=True, skiprows=0, usecols=p
 
 print('Datasets Loaded.')
 
-cut = math.floor(all_set.shape[0]*0.7)
+cut = math.floor(all_set.shape[0]*0.95)
 X_train=all_set[0:cut, :88]
 y_train=all_set[0:cut, -1]
 training_weight=all_set[0:cut,-2]
@@ -82,7 +83,7 @@ model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy']
 print(model.summary())
 
 
-model.fit(X_train, y_train, epochs=50, batch_size=5000, validation_data=(X_test,y_test), sample_weight=training_weight) #not sure whether validation_split uses weight
+model.fit(X_train, y_train, epochs=300, batch_size=5000, validation_data=(X_test,y_test), sample_weight=training_weight) #not sure whether validation_split uses weight
 
 '''
 # Final evaluation of the model
@@ -90,7 +91,7 @@ scores = model.evaluate(X_test, y_test, verbose=0)
 print("Accuracy: %.2f%%" % (scores[1]*100))
 '''
 
-predictions = model.predict(X_predict).flatten()
+predictions = model.predict(prediction_set).flatten()
 print('Max =' + str(np.max(predictions)))
 print('Min =' + str(np.min(predictions)))
 
