@@ -48,4 +48,4 @@ clf=SVC(probability=True)
 clf.fit(training_set[:,1:],training_set[:,0])
 predicted_prob=clf.predict_proba(prediction_set)
 
-np.save("test.npy",predicted_prob)
+np.savetxt('SVC.csv',predicted_prob,delimiter=',')
