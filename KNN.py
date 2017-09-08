@@ -16,6 +16,17 @@ TESTDIR="../data/stock_test_data_20170901.csv"
 COLUMNS = list(range(1,91))  #Read Feature,weight,label
 all_set = pd.read_csv(DIR, skipinitialspace=True,
                              skiprows=0, usecols=COLUMNS).as_matrix()
+
+def standardize_data(array):
+    #takes in 2d arrays
+    #relative scale
+    a = array.copy()
+    for i in range(a.shape[-1]):
+        mean = np.mean(a[:, i])
+        std = np.std(a[:, i])
+        a[:,i] = (a[:,i] - mean)/std
+    return a
+
 SORT = list(range(0,89))
 SORT.insert(0,89)   #89,0-87,88
 all_set = all_set[:,np.array(SORT)] #Change into 0Label,Feature,88Weight
@@ -28,11 +39,14 @@ prediction_set=pd.read_csv(TESTDIR, skipinitialspace=True,
                              skiprows=0, usecols=SSD).as_matrix()
 #prediction_set=all_set[math.floor(all_set.shape[0]*0.7):]             
 training_weight=training_set[:,-1]
-training_set=training_set[:,:-1]         
+training_set=training_set[:,:-1]    
+
+
+
 #prediction_weight=prediction_set[:,-1]
 #prediction_set=prediction_set[:,:-1]    
 clf=KNeighborsClassifier(n_neighbors=20,n_jobs=-1)
-clf.fit(training_set[:,1:],training_set[:,0])
-predicted_prob=clf.predict_proba(prediction_set)
+clf.fit(standardize_data(training_set[:,1:]),training_set[:,0])
+predicted_prob=clf.predict_proba(standardize_data(prediction_set))
 
 np.savetxt('KNN.csv',predicted_prob,delimiter=',')
