@@ -99,7 +99,7 @@ scores = model.evaluate(X_test, y_test, verbose=0)
 print("Accuracy: %.2f%%" % (scores[1]*100))
 '''
 
-predictions = model.predict(X_predict).flatten()
+predictions = model.predict(X_predict,verbose=1).flatten()
 print('Max =' + str(np.max(predictions)))
 print('Min =' + str(np.min(predictions)))
 #predictions=np.clip(predictions,0.001,0.999)
