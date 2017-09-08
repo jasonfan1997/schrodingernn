@@ -209,8 +209,8 @@ def main():
       print("Profit rate: " + str(pr))    '''  
       
         
-  profit_rate()
-  profit_rate_2() 
+  #profit_rate()
+  #profit_rate_2() 
   
   
   
