@@ -27,8 +27,10 @@ all_set = all_set[:,np.array(SORT)] #Change into 0Label,Feature,88Weight
 np.random.shuffle(all_set)
 #training_set=all_set
 #training_set=all_set
-training_set=all_set[0:math.floor(all_set.shape[0]*0.7)]
-prediction_set=all_set[math.floor(all_set.shape[0]*0.7):]    
+training_set=all_set
+SSD=list(range(1,89))
+prediction_set=pd.read_csv(TESTDIR, skipinitialspace=True,
+                             skiprows=0, usecols=SSD).as_matrix()
 #prediction_set=all_set[math.floor(all_set.shape[0]*0.7):]             
 training_weight=training_set[:,-1]
 training_set=training_set[:,:-1]         
@@ -44,6 +46,6 @@ prediction_set=pd.read_csv(TESTDIR, skipinitialspace=True,
 clf=SVC(probability=True)
 #print(cross_val_score(clf,training_set[:,1:], training_set[:,0], cv=10))
 clf.fit(training_set[:,1:],training_set[:,0])
-predicted_prob=clf.predict_proba(prediction_set[:,1:])
-predicted_class=np.zeros(prediction_set.shape[0])
+predicted_prob=clf.predict_proba(prediction_set)
+
 np.save("test.npy",predicted_prob)
