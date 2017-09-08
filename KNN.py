@@ -49,4 +49,8 @@ clf=KNeighborsClassifier(n_neighbors=20,n_jobs=-1)
 clf.fit(standardize_data(training_set[:,1:]),training_set[:,0])
 predicted_prob=clf.predict_proba(standardize_data(prediction_set))
 
-np.savetxt('KNN.csv',predicted_prob,delimiter=',')
+#testdata: 321674 ~ 521619
+indices = pd.read_csv(TESTDIR, skipinitialspace=True, skiprows=0, usecols=[0]).as_matrix().flatten()
+df = pd.DataFrame(data={'id':indices, 'proba':predicted_prob[:,1]})
+df.to_csv('result_notstan_duo.csv',index=False)
+print('Result saved.')
