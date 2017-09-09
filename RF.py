@@ -4,7 +4,7 @@ Created on Wed Jul 19 14:14:37 2017
 
 @author: user98
 """
-
+from sklearn.metrics import log_loss
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import linear_model
 # Load pandas
@@ -23,15 +23,15 @@ all_set = all_set[:,np.array(SORT)] #Change into 0Label,Feature,88Weight
 np.random.shuffle(all_set)
 training_set=all_set
 SSD=list(range(1,89))
-prediction_set=pd.read_csv(TESTDIR, skipinitialspace=True,
-                             skiprows=0, usecols=SSD).as_matrix()
-#training_set=all_set[0:math.floor(all_set.shape[0]*0.7)]
-#prediction_set=all_set[math.floor(all_set.shape[0]*0.7):]    
-#prediction_set=all_set[math.floor(all_set.shape[0]*0.7):]             
+#prediction_set=pd.read_csv(TESTDIR, skipinitialspace=True,
+#                        skiprows=0, usecols=SSD).as_matrix()
+training_set=all_set[0:math.floor(all_set.shape[0]*0.7)]
+prediction_set=all_set[math.floor(all_set.shape[0]*0.7):]    
+prediction_set=all_set[math.floor(all_set.shape[0]*0.7):]             
 training_weight=training_set[:,-1]
 training_set=training_set[:,:-1]         
-#prediction_weight=prediction_set[:,-1]
-#prediction_set=prediction_set[:,:-1]    
+prediction_weight=prediction_set[:,-1]
+prediction_set=prediction_set[:,:-1]    
 
 #logreg = linear_model.LogisticRegression()
 '''
@@ -42,13 +42,25 @@ prediction_set=pd.read_csv(TESTDIR, skipinitialspace=True,
 # we create an instance of Neighbours Classifier and fit the data.
 #logreg.fit(training_set[:,1:],training_set[:,0])
 #predicted_class = logreg.predict(prediction_set[:,1:])
-clf=RandomForestClassifier(n_estimators=150000,criterion='gini',n_jobs=-1,verbose=2)
+clf=RandomForestClassifier(n_estimators=50000,criterion='gini',n_jobs=40,verbose=2)
 clf.fit(training_set[:,1:],training_set[:,0])
 #predicted_class=clf.predict(prediction_set[:,1:])
-predicted_proba=clf.predict_proba(prediction_set)
-predicted_prob=clf.predict_proba(prediction_set)
+predicted_proba=clf.predict_proba(prediction_set[:,1:])
+#predicted_prob=clf.predict_proba(prediction_set)
+los=log_loss(prediction_set[:,0],predicted_proba)
+with open("file.txt", "w") as output:
+    output.write(str(los))
 
+print(los)
 #testdata: 321674 ~ 521619
+training_set=all_set
+prediction_set=pd.read_csv(TESTDIR, skipinitialspace=True,
+                             skiprows=0, usecols=SSD).as_matrix()
+training_weight=training_set[:,-1]
+training_set=training_set[:,:-1]   
+clf=RandomForestClassifier(n_estimators=50000,criterion='gini',n_jobs=40,verbose=2)
+clf.fit(training_set[:,1:],training_set[:,0])    
+predicted_prob=clf.predict_proba(prediction_set)
 indices = pd.read_csv(TESTDIR, skipinitialspace=True, skiprows=0, usecols=[0]).as_matrix().flatten()
 df = pd.DataFrame(data={'id':indices, 'proba':predictions})
 df.to_csv('result_notstan_RF.csv',index=False)
