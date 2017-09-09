@@ -42,10 +42,14 @@ prediction_set=pd.read_csv(TESTDIR, skipinitialspace=True,
 # we create an instance of Neighbours Classifier and fit the data.
 #logreg.fit(training_set[:,1:],training_set[:,0])
 #predicted_class = logreg.predict(prediction_set[:,1:])
-clf=RandomForestClassifier(n_estimators=20000,criterion='gini',n_jobs=-1,verbose=2)
+clf=RandomForestClassifier(n_estimators=150000,criterion='gini',n_jobs=-1,verbose=2)
 clf.fit(training_set[:,1:],training_set[:,0])
 #predicted_class=clf.predict(prediction_set[:,1:])
 predicted_proba=clf.predict_proba(prediction_set)
 predicted_prob=clf.predict_proba(prediction_set)
 
-np.savetxt('RF.csv',predicted_prob,delimiter=',')
+#testdata: 321674 ~ 521619
+indices = pd.read_csv(TESTDIR, skipinitialspace=True, skiprows=0, usecols=[0]).as_matrix().flatten()
+df = pd.DataFrame(data={'id':indices, 'proba':predictions})
+df.to_csv('result_notstan_RF.csv',index=False)
+print('Result saved.')

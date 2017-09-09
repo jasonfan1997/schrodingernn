@@ -44,9 +44,11 @@ SSD=list(range(1,89))
 prediction_set=pd.read_csv(TESTDIR, skipinitialspace=True,
                              skiprows=0, usecols=SSD).as_matrix()
 '''
-clf=SVC(probability=True,verbose=3,n_jobs=-1)
+clf=SVC(probability=True,verbose=3)
 #print(cross_val_score(clf,training_set[:,1:], training_set[:,0], cv=10))
 clf.fit(training_set[:,1:],training_set[:,0])
 predicted_prob=clf.predict_proba(prediction_set)
-
-np.savetxt('SVC.csv',predicted_prob,delimiter=',')
+indices = pd.read_csv(TESTDIR, skipinitialspace=True, skiprows=0, usecols=[0]).as_matrix().flatten()
+df = pd.DataFrame(data={'id':indices, 'proba':predictions})
+df.to_csv('result_svc.csv',index=False)
+print('Result saved.')
