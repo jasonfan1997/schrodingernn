@@ -22,11 +22,11 @@ def standardize_data(array):
         a[:,i] = (a[:,i] - mean)/std
     return a
 
-DIR = "../data/stock_train_data_20170901.csv"
+DIR = "../data/stock_train_data_20170910.csv"
 COLUMNS = list(range(1,91))  #Read Feature,weight,label
 all_set = pd.read_csv(DIR, skipinitialspace=True,
                              skiprows=0, usecols=COLUMNS).as_matrix()
-TESTDIR="../data/stock_test_data_20170901.csv"							 
+TESTDIR="../data/stock_test_data_20170910.csv"							 
 SORT = list(range(0,89))
 SORT.insert(0,89)   #89,0-87,88
 all_set = all_set[:,np.array(SORT)] #Change into 0Label,Feature,88Weight
@@ -50,8 +50,8 @@ prediction_set=prediction_set[:,:-1]
 clf=KNeighborsClassifier(n_neighbors=1000,n_jobs=-1)
 clf.fit(standardize_data(training_set[:,1:]),training_set[:,0])
 predicted_prob=clf.predict_proba(standardize_data(prediction_set[:,1:]))
-los=log_loss(prediction_set[:,0],predicted_proba)
-with open("loss.txt", "w") as output:
+los=log_loss(prediction_set[:,0],predicted_prob)
+with open("lossknn.txt", "w") as output:
     output.write(str(los))
 
 print(los)
@@ -61,8 +61,8 @@ prediction_set=pd.read_csv(TESTDIR, skipinitialspace=True,
 training_weight=training_set[:,-1]
 training_set=training_set[:,:-1]
 clf.fit(training_set[:,1:],training_set[:,0])   
-predicted_prob=clf.predict_proba(prediction_set)
+predictions=clf.predict_proba(prediction_set)
 indices = pd.read_csv(TESTDIR, skipinitialspace=True, skiprows=0, usecols=[0]).as_matrix().flatten()
-df = pd.DataFrame(data={'id':indices, 'proba':predictions})
+df = pd.DataFrame(data={'id':indices, 'proba':predictions[:,1]})
 df.to_csv('result_KNN1000.csv',index=False)
 print('Result saved.')

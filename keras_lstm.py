@@ -21,12 +21,12 @@ def standardize_data(array):
     return a
 
 # load the dataset
-DIR = "../data/stock_train_data_20170901.csv"
+DIR = "../data/stock_train_data_20170910.csv"
 COLUMNS = list(range(1,91))  #Read 88 features, weight, label
 all_set = pd.read_csv(DIR, skipinitialspace=True, skiprows=0, usecols=COLUMNS).as_matrix()
 np.random.shuffle(all_set)
 
-TESTDIR="../data/stock_test_data_20170901.csv"
+TESTDIR="../data/stock_test_data_20170910.csv"
 pred_col=list(range(1,89))   #1-88,Features
 prediction_set=pd.read_csv(TESTDIR, skipinitialspace=True, skiprows=0, usecols=pred_col).as_matrix()
 
@@ -89,7 +89,7 @@ model.compile(loss='binary_crossentropy', optimizer=adam, metrics=['accuracy'])
 print(model.summary())
 
 
-model.fit(X_train, y_train, epochs=1, batch_size=3000, validation_data=(X_test,y_test), sample_weight=training_weight) #not sure whether validation_split uses weight
+model.fit(X_train, y_train, epochs=50, batch_size=3000, validation_data=(X_test,y_test), sample_weight=training_weight) #not sure whether validation_split uses weight
 
 print('Training finished. Start predicting.')
 
